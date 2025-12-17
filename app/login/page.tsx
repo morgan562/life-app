@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase/client";
 export default function HomePage() {
   const [email, setEmail] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("Booting…");
+  const [authLog, setAuthLog] = useState<{ action: string; redirectTo?: string; error?: string } | null>(null);
 
   async function ensureUserSetup(user: { id: string; email?: string | null; user_metadata?: any }) {
     setStatus("Ensuring user setup…");
@@ -35,21 +36,8 @@ export default function HomePage() {
       return;
     }
 
-    // 3) Add membership row (safe to run multiple times)
-    const { error: memberError } = await supabase.from("workspace_members").upsert(
-      {
-        workspace_id: workspace.id,
-        user_id: user.id,
-        role: "member",
-      },
-      { onConflict: "workspace_id,user_id" }
-    );
-
-    if (memberError) {
-      console.error("Member upsert failed:", memberError);
-      setStatus("Member upsert failed (check console)");
-      return;
-    }
+    // 3) Membership creation is handled only during onboarding; never here.
+    console.log("[login/ensureUserSetup] skipping workspace_members upsert (handled in /onboarding)");
 
     setStatus("User setup complete ✅");
   }
@@ -94,15 +82,23 @@ export default function HomePage() {
 
   async function signInWithGoogle() {
     setStatus("Redirecting to Google…");
-    const { error } = await supabase.auth.signInWithOAuth({
+    const redirectTo = `${window.location.origin}/auth/callback`;
+    console.log("[login] redirectTo", redirectTo);
+    setAuthLog({ action: "signInWithGoogle:start", redirectTo });
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo },
     });
+    console.log("[login] signInWithOAuth result", { data, error });
     if (error) {
-      console.error(error);
+      console.error("[login] Google sign-in error", error);
       setStatus(`Google sign-in error: ${error.message}`);
       alert(error.message);
+      setAuthLog({ action: "signInWithGoogle:error", redirectTo, error: error.message });
+      return;
     }
+    setAuthLog({ action: "signInWithGoogle:ok", redirectTo });
+    setStatus("Redirect initiated…");
   }
 
   async function signOut() {
@@ -134,6 +130,12 @@ export default function HomePage() {
         </div>
 
         <div className="mt-6">
+          <div className="mb-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-700">
+            <div className="font-semibold">Auth log</div>
+            <pre className="mt-1 whitespace-pre-wrap break-all">
+              {authLog ? JSON.stringify(authLog, null, 2) : "No actions yet."}
+            </pre>
+          </div>
           {email ? (
             <button
               onClick={signOut}
