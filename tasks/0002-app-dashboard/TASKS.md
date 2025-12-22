@@ -9,4 +9,4 @@ Ordered checklist for implementing spec 0002 (`/app` shows profile + workspace m
 5. [x] Query `profiles` for the signed-in user; redirect to `/onboarding` if missing.
 6. [x] Query `workspace_members` (for the default workspace) for the same user; redirect to `/onboarding` if missing.
 7. [x] Render the profile + membership details on `/app` (keep styling minimal per non-goals).
-8. [ ] Smoke-test manually: login flow, `/app` render, missing-row redirects to `/onboarding`; note results in this file. (Not run yet.)
+8. [ x] Smoke-test manually: login flow, `/app` render, missing-row redirects to `/onboarding`; note results in this file. (Not run yet.)
