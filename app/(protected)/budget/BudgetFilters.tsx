@@ -65,15 +65,15 @@ export function BudgetFilters({ selectedMonthParam, typeFilter, categoryFilter, 
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50"
+            className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold text-black hover:bg-neutral-50"
             onClick={() => setMonth(buildMonthParam(selectedMonthParam, -1))}
           >
             Prev
           </button>
-          <div className="text-sm font-semibold text-neutral-900">{monthLabel(selectedMonthParam)}</div>
+          <div className="text-sm font-semibold text-black">{monthLabel(selectedMonthParam)}</div>
           <button
             type="button"
-            className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50"
+            className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold text-black hover:bg-neutral-50"
             onClick={() => setMonth(buildMonthParam(selectedMonthParam, 1))}
           >
             Next
@@ -81,8 +81,8 @@ export function BudgetFilters({ selectedMonthParam, typeFilter, categoryFilter, 
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm text-neutral-800">
-            <span className="mb-1 block text-xs uppercase tracking-wide text-neutral-500">Type</span>
+          <label className="text-sm text-black">
+            <span className="mb-1 block text-xs uppercase tracking-wide text-black">Type</span>
             <select
               value={typeFilter}
               onChange={(event) => updateParam("type", event.target.value)}
@@ -94,8 +94,8 @@ export function BudgetFilters({ selectedMonthParam, typeFilter, categoryFilter, 
             </select>
           </label>
 
-          <label className="text-sm text-neutral-800">
-            <span className="mb-1 block text-xs uppercase tracking-wide text-neutral-500">Category</span>
+          <label className="text-sm text-black">
+            <span className="mb-1 block text-xs uppercase tracking-wide text-black">Category</span>
             <select
               value={categoryFilter ?? "all"}
               onChange={(event) => updateParam("category", event.target.value === "all" ? null : event.target.value)}

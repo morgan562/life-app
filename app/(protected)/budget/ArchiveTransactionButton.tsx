@@ -11,7 +11,7 @@ function SubmitButton() {
   return (
     <button
       type="submit"
-      className="text-sm font-semibold text-red-700 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+      className="text-sm font-semibold text-black hover:text-black disabled:cursor-not-allowed disabled:opacity-60"
       disabled={pending}
     >
       {pending ? "Archiving..." : "Archive"}
@@ -26,7 +26,7 @@ export function ArchiveTransactionButton({ transactionId }: { transactionId: str
     <form action={formAction} className="flex flex-col items-start gap-1">
       <input type="hidden" name="transaction_id" value={transactionId} />
       <SubmitButton />
-      {state.error && <p className="text-xs text-red-700">{state.error}</p>}
+      {state.error && <p className="text-xs text-black">{state.error}</p>}
     </form>
   );
 }

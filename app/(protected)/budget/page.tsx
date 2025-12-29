@@ -27,7 +27,7 @@ type BudgetTransaction = {
   occurred_at: string;
   created_by: string | null;
   category_id: string | null;
-  category?: { id: string; name: string } | null;
+  category?: { id: string; name: string; is_archived: boolean } | null;
 };
 
 type Totals = {
@@ -121,7 +121,9 @@ async function fetchTransactions(
 ) {
   let query = supabase
     .from("budget_transactions")
-    .select("id, type, description, amount, occurred_at, created_by, category_id, category:budget_categories(id, name)")
+    .select(
+      "id, type, description, amount, occurred_at, created_by, category_id, category:budget_categories(id, name, is_archived)"
+    )
     .eq("workspace_id", workspaceId)
     .eq("is_archived", false)
     .gte("occurred_at", filters.monthStart.toISOString())
@@ -212,11 +214,17 @@ export default async function BudgetPage({
   const filters = parseFilters(sp ?? {});
   const { categories, transactions, totals, errors } = await getBudgetPageData(workspaceId, filters);
 
-  const categoryNameById =
-    categories?.reduce<Record<string, string>>((acc, category) => {
-      acc[category.id] = category.name;
+  const categoryById =
+    categories?.reduce<Record<string, { name: string; is_archived: boolean }>>((acc, category) => {
+      acc[category.id] = { name: category.name, is_archived: false };
       return acc;
     }, {}) ?? {};
+
+  transactions?.forEach((txn) => {
+    if (txn.category) {
+      categoryById[txn.category.id] = { name: txn.category.name, is_archived: Boolean(txn.category.is_archived) };
+    }
+  });
 
   const errorMessage = errors.find((err) => err)?.message ?? null;
   const hasError = Boolean(errorMessage);
@@ -226,11 +234,11 @@ export default async function BudgetPage({
     filters.typeFilter !== "all" || !!filters.categoryFilter || filters.selectedMonthParam !== currentMonthParam;
 
   return (
-    <main className="p-6">
+    <main className="min-h-screen bg-[#f9f6f1] p-6 text-black">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Budget</h1>
-          <p className="mt-2 text-neutral-600">Track income and expenses for your workspace.</p>
+          <h1 className="font-serif text-3xl font-semibold text-black">Budget</h1>
+          <p className="mt-2 text-sm text-[#4d463f]">Track income and expenses for your workspace.</p>
         </div>
       </div>
 
@@ -242,23 +250,23 @@ export default async function BudgetPage({
       />
 
       {hasError && (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-black">
           Error loading budget data: {errorMessage}
         </div>
       )}
 
-      <section className="mt-6 grid gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:grid-cols-3">
+      <section className="mt-6 grid gap-4 rounded-2xl border border-[rgba(107,142,35,0.35)] bg-white/90 p-4 shadow-sm sm:grid-cols-3">
         <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Income (MTD)</div>
-          <div className="text-lg font-semibold text-green-700">${totals.income.toFixed(2)}</div>
+          <div className="text-xs uppercase tracking-wide text-black">Income (MTD)</div>
+          <div className="text-lg font-semibold text-black">${totals.income.toFixed(2)}</div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Expense (MTD)</div>
-          <div className="text-lg font-semibold text-red-700">${totals.expense.toFixed(2)}</div>
+          <div className="text-xs uppercase tracking-wide text-black">Expense (MTD)</div>
+          <div className="text-lg font-semibold text-black">${totals.expense.toFixed(2)}</div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Net (MTD)</div>
-          <div className="text-lg font-semibold text-neutral-900">${totals.net.toFixed(2)}</div>
+          <div className="text-xs uppercase tracking-wide text-black">Net (MTD)</div>
+          <div className="text-lg font-semibold text-black">${totals.net.toFixed(2)}</div>
         </div>
       </section>
 
@@ -266,10 +274,10 @@ export default async function BudgetPage({
         <AddTransactionForm categories={categories ?? []} />
       </section>
 
-      <section className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
+      <section className="mt-6 rounded-2xl border border-[rgba(107,142,35,0.35)] bg-white/90 p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-900">Recent Transactions</h2>
-          <div className="text-xs text-neutral-500">
+          <h2 className="text-lg font-semibold text-black">Recent Transactions</h2>
+          <div className="text-xs text-black">
             Showing latest 20{hasFiltersActive ? " (filtered)" : ""}
           </div>
         </div>
@@ -277,19 +285,19 @@ export default async function BudgetPage({
           <TransactionTable
             transactions={transactions as BudgetTransaction[]}
             categories={categories ?? []}
-            categoryNameById={categoryNameById}
+            categoryById={categoryById}
           />
         ) : (
-          <p className="text-sm text-neutral-600">No transactions yet.</p>
+          <p className="text-sm text-black">No transactions yet.</p>
         )}
       </section>
 
-      <section className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-neutral-900">Categories</h2>
+      <section className="mt-6 rounded-2xl border border-[rgba(107,142,35,0.35)] bg-white/90 p-4 shadow-sm">
+        <h2 className="text-lg font-semibold text-black">Categories</h2>
         {categories && categories.length > 0 ? (
           <CategoryList categories={categories} />
         ) : (
-          <p className="mt-2 text-sm text-neutral-600">No categories yet.</p>
+          <p className="mt-2 text-sm text-black">No categories yet.</p>
         )}
       </section>
     </main>

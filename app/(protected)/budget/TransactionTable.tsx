@@ -21,13 +21,13 @@ type BudgetTransaction = {
   occurred_at: string;
   created_by: string | null;
   category_id: string | null;
-  category?: { id: string; name: string } | null;
+  category?: { id: string; name: string; is_archived: boolean } | null;
 };
 
 type Props = {
   transactions: BudgetTransaction[];
   categories: BudgetCategory[];
-  categoryNameById: Record<string, string>;
+  categoryById: Record<string, { name: string; is_archived: boolean }>;
 };
 
 function SaveButton() {
@@ -35,7 +35,7 @@ function SaveButton() {
   return (
     <button
       type="submit"
-      className="rounded-lg bg-neutral-900 px-3 py-2 text-xs font-semibold text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-70"
+      className="rounded-lg border border-neutral-200 bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-70"
       disabled={pending}
     >
       {pending ? "Saving..." : "Save"}
@@ -48,7 +48,7 @@ function CancelButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       type="button"
-      className="rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-70"
+      className="rounded-lg border border-neutral-200 px-3 py-2 text-xs font-semibold text-black hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-70"
       onClick={onClick}
       disabled={pending}
     >
@@ -57,7 +57,7 @@ function CancelButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function TransactionTable({ transactions, categories, categoryNameById }: Props) {
+export function TransactionTable({ transactions, categories, categoryById }: Props) {
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formState, formAction] = useActionState(updateBudgetTransaction, updateTransactionInitialState);
@@ -122,16 +122,23 @@ export function TransactionTable({ transactions, categories, categoryNameById }:
   };
 
   const renderCategory = (txn: BudgetTransaction) => {
-    if (txn.category_id) {
-      return txn.category?.name ?? categoryNameById[txn.category_id] ?? "(unknown)";
+    if (!txn.category_id) {
+      return "(uncategorized)";
     }
-    return "(uncategorized)";
+
+    const category = txn.category ?? categoryById[txn.category_id];
+    if (category) {
+      const suffix = category.is_archived ? " (archived)" : "";
+      return `${category.name}${suffix}`;
+    }
+
+    return "(deleted category)";
   };
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm">
-        <thead className="text-left text-neutral-500">
+        <thead className="text-left text-black">
           <tr>
             <th className="py-2 pr-4">Date</th>
             <th className="py-2 pr-4">Category</th>
@@ -142,7 +149,7 @@ export function TransactionTable({ transactions, categories, categoryNameById }:
             <th className="py-2 pr-4">Actions</th>
           </tr>
         </thead>
-        <tbody className="text-neutral-900">
+        <tbody className="text-black">
           {transactions.map((txn) => {
             const isEditing = editingId === txn.id;
             const draft = drafts[txn.id] ?? {
@@ -211,7 +218,7 @@ export function TransactionTable({ transactions, categories, categoryNameById }:
                       className="w-full rounded-lg border border-neutral-200 px-2 py-1 text-sm focus:border-neutral-400 focus:outline-none"
                     />
                   </td>
-                  <td className="py-2 pr-4 text-neutral-600">{txn.created_by ?? "(unknown)"}</td>
+                  <td className="py-2 pr-4 text-black">{txn.created_by ?? "(unknown)"}</td>
                   <td className="py-2 pr-4">
                     <form action={formAction} className="flex flex-col gap-2">
                       <input type="hidden" name="transaction_id" value={txn.id} />
@@ -224,7 +231,7 @@ export function TransactionTable({ transactions, categories, categoryNameById }:
                         <SaveButton />
                         <CancelButton onClick={() => setEditingId(null)} />
                       </div>
-                      {formState.error && <span className="text-xs text-red-700">{formState.error}</span>}
+                      {formState.error && <span className="text-xs text-black">{formState.error}</span>}
                     </form>
                   </td>
                 </tr>
@@ -238,11 +245,11 @@ export function TransactionTable({ transactions, categories, categoryNameById }:
                 <td className="py-2 pr-4 align-top">{txn.description ?? "(no description)"}</td>
                 <td className="py-2 pr-4 align-top capitalize">{txn.type}</td>
                 <td className="py-2 pr-4 align-top">${Number(txn.amount).toFixed(2)}</td>
-                <td className="py-2 pr-4 align-top text-neutral-600">{txn.created_by ?? "(unknown)"}</td>
+                <td className="py-2 pr-4 align-top text-black">{txn.created_by ?? "(unknown)"}</td>
                 <td className="py-2 pr-4 align-top space-y-1">
                   <button
                     type="button"
-                    className="text-sm font-semibold text-neutral-700 hover:text-neutral-900"
+                    className="text-sm font-semibold text-black hover:text-black"
                     onClick={() => startEdit(txn.id)}
                   >
                     Edit
