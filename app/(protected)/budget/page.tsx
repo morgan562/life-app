@@ -30,6 +30,10 @@ type BudgetTransaction = {
   category?: { id: string; name: string; is_archived: boolean } | null;
 };
 
+type BudgetTransactionWithArrayCategory = Omit<BudgetTransaction, "category"> & {
+  category: { id: string; name: string; is_archived: boolean }[] | null;
+};
+
 type Totals = {
   income: number;
   expense: number;
@@ -121,9 +125,7 @@ async function fetchTransactions(
 ) {
   let query = supabase
     .from("budget_transactions")
-    .select(
-      "id, type, description, amount, occurred_at, created_by, category_id, category:budget_categories(id, name, is_archived)"
-    )
+    .select("id, type, description, amount, occurred_at, created_by, category_id, category:budget_categories(id, name, is_archived)")
     .eq("workspace_id", workspaceId)
     .eq("is_archived", false)
     .gte("occurred_at", filters.monthStart.toISOString())
@@ -196,8 +198,15 @@ async function getBudgetPageData(
 
   const [
     { data: categories, error: categoriesError },
-    { data: transactions, error: transactionsError },
+    { data: rawTransactions, error: transactionsError },
   ] = await Promise.all([fetchCategories(supabase, workspaceId), fetchTransactions(supabase, workspaceId, filters)]);
+
+  const typedTransactions = (rawTransactions as BudgetTransactionWithArrayCategory[] | null) ?? null;
+  const transactions: BudgetTransaction[] | null =
+    typedTransactions?.map((txn) => ({
+      ...txn,
+      category: txn.category?.[0] ?? null,
+    })) ?? null;
 
   const { totals, error: totalsError } = await fetchTotals(supabase, workspaceId, filters);
 
