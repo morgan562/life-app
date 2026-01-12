@@ -11,7 +11,6 @@ import type {
 import { revalidatePath } from "next/cache";
 
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { normalizeDateToMiddayUTC } from "@/lib/dates";
 
 type WorkspaceMembership = {
   workspace_id: string;
@@ -60,16 +59,12 @@ export async function addTransaction(
   }
 
   const occurredAtValue = formData.get("occurred_at");
-  const occurredAtString = typeof occurredAtValue === "string" ? occurredAtValue.trim() : "";
-  if (!occurredAtString) {
-    return { error: "Date is required.", success: false };
-  }
-
-  let occurredAt: string;
-  try {
-    occurredAt = normalizeDateToMiddayUTC(occurredAtString);
-  } catch {
-    return { error: "Date is required.", success: false };
+  let occurredAt = new Date();
+  if (typeof occurredAtValue === "string" && occurredAtValue.trim()) {
+    const parsedDate = new Date(`${occurredAtValue}T00:00:00`);
+    if (!Number.isNaN(parsedDate.getTime())) {
+      occurredAt = parsedDate;
+    }
   }
 
   const description = formData.get("description");
@@ -82,7 +77,7 @@ export async function addTransaction(
     type,
     description: descriptionValue,
     amount,
-    occurred_at: occurredAt,
+    occurred_at: occurredAt.toISOString(),
   });
 
   if (insertError) {
@@ -291,15 +286,9 @@ export async function updateBudgetTransaction(
   }
 
   const occurredAtValue = formData.get("occurred_at");
-  const occurredAtString = typeof occurredAtValue === "string" ? occurredAtValue.trim() : "";
-  if (!occurredAtString) {
-    return { error: "Date is required.", success: false };
-  }
-
-  let occurredAt: string;
-  try {
-    occurredAt = normalizeDateToMiddayUTC(occurredAtString);
-  } catch {
+  const occurredAtString = typeof occurredAtValue === "string" ? occurredAtValue : "";
+  const occurredAtDate = new Date(`${occurredAtString}T00:00:00`);
+  if (!occurredAtString || Number.isNaN(occurredAtDate.getTime())) {
     return { error: "Date is required.", success: false };
   }
 
@@ -316,7 +305,7 @@ export async function updateBudgetTransaction(
       category_id: categoryId,
       type,
       amount,
-      occurred_at: occurredAt,
+      occurred_at: occurredAtDate.toISOString(),
       description: descriptionValue,
       updated_at: new Date().toISOString(),
     })

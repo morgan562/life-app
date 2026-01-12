@@ -90,20 +90,20 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
   const calendarWeeks = buildCalendarGrid(monthIso);
 
   return (
-    <main className="min-h-screen bg-white px-6 py-10 text-neutral-900">
+    <main className="min-h-screen bg-[#f9f6f1] px-6 py-10 text-[#2f2b27]">
       <div className="mx-auto flex max-w-5xl flex-col gap-12">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">Budget Calendar</h1>
-            <p className="mt-2 text-sm text-neutral-600">
+            <h1 className="font-serif text-3xl font-semibold text-[#2f2b27]">Budget Calendar</h1>
+            <p className="mt-2 text-sm text-[#4d463f]">
               Create bills for your workspace and track payments for the selected month.
             </p>
           </div>
           <form
             method="get"
-            className="flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-800"
+            className="flex items-center gap-3 rounded-full border border-[rgba(107,119,94,0.25)] bg-[#f1ede6] px-4 py-2 text-sm text-[#3c372f]"
           >
-            <label className="text-xs uppercase tracking-wide text-neutral-500" htmlFor="month">
+            <label className="text-xs uppercase tracking-wide text-[#6f665d]" htmlFor="month">
               Month
             </label>
             <input
@@ -111,11 +111,11 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
               id="month"
               name="month"
               defaultValue={monthInputValue}
-              className="border-b border-neutral-200 bg-transparent px-2 pb-1 text-sm text-neutral-900 outline-none focus:border-neutral-400"
+              className="border-b border-[rgba(107,119,94,0.25)] bg-transparent px-2 pb-1 text-sm text-[#2f2b27] outline-none focus:border-[#6B775E]"
             />
             <button
               type="submit"
-              className="rounded-full border border-neutral-200 bg-transparent px-3 py-1 text-xs font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+              className="rounded-full border border-[rgba(107,119,94,0.25)] bg-transparent px-3 py-1 text-xs font-medium text-[#3c372f] transition hover:border-[#6B775E] hover:text-[#2f2b27]"
             >
               Go
             </button>
@@ -123,28 +123,28 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
         </div>
 
         {errorMessage && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-[#3c2b2b]">
             {errorMessage}
           </div>
         )}
 
-        <section className="rounded-2xl border border-neutral-200 bg-white px-6 py-5 shadow-sm">
-          <h2 className="text-xl font-medium text-neutral-900">Create bill</h2>
+        <section className="rounded-2xl border border-[rgba(107,119,94,0.2)] bg-white/90 px-6 py-5 shadow-sm">
+          <h2 className="font-serif text-xl font-medium text-[#2f2b27]">Create bill</h2>
           <form action={createBill} className="mt-4 grid gap-4 sm:grid-cols-4 sm:items-end">
             <div className="sm:col-span-2">
-              <label className="text-xs uppercase tracking-wide text-neutral-500" htmlFor="name">
+              <label className="text-xs uppercase tracking-wide text-[#6f665d]" htmlFor="name">
                 Name
               </label>
               <input
                 id="name"
                 name="name"
                 required
-                className="mt-2 w-full border-b border-neutral-200 bg-transparent pb-2 text-sm text-neutral-900 outline-none focus:border-neutral-400"
+                className="mt-2 w-full border-b border-[rgba(107,119,94,0.25)] bg-transparent pb-2 text-sm text-[#2f2b27] outline-none focus:border-[#6B775E]"
                 placeholder="Rent"
               />
             </div>
             <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-500" htmlFor="amount">
+              <label className="text-xs uppercase tracking-wide text-[#6f665d]" htmlFor="amount">
                 Amount
               </label>
               <input
@@ -154,12 +154,12 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
                 min="0"
                 step="0.01"
                 required
-                className="mt-2 w-full border-b border-neutral-200 bg-transparent pb-2 text-sm text-neutral-900 outline-none focus:border-neutral-400"
+                className="mt-2 w-full border-b border-[rgba(107,119,94,0.25)] bg-transparent pb-2 text-sm text-[#2f2b27] outline-none focus:border-[#6B775E]"
                 placeholder="1200"
               />
             </div>
             <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-500" htmlFor="due_day">
+              <label className="text-xs uppercase tracking-wide text-[#6f665d]" htmlFor="due_day">
                 Due day
               </label>
               <input
@@ -169,14 +169,14 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
                 min="1"
                 max="31"
                 required
-                className="mt-2 w-full border-b border-neutral-200 bg-transparent pb-2 text-sm text-neutral-900 outline-none focus:border-neutral-400"
+                className="mt-2 w-full border-b border-[rgba(107,119,94,0.25)] bg-transparent pb-2 text-sm text-[#2f2b27] outline-none focus:border-[#6B775E]"
                 placeholder="1"
               />
             </div>
             <div className="sm:col-span-4">
               <button
                 type="submit"
-                className="inline-flex rounded-full border border-neutral-200 bg-transparent px-4 py-2 text-sm font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+                className="inline-flex rounded-full border border-[rgba(107,119,94,0.25)] bg-transparent px-4 py-2 text-sm font-medium text-[#3c372f] transition hover:border-[#6B775E] hover:text-[#2f2b27]"
               >
                 Save bill
               </button>
@@ -184,33 +184,44 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
           </form>
         </section>
 
-        <section className="rounded-2xl border border-neutral-200 bg-white px-6 py-5 shadow-sm">
+        <section className="rounded-2xl border border-[rgba(107,119,94,0.2)] bg-[#f1ede6] px-6 py-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-medium text-neutral-900">Bills for {monthInputValue}</h2>
-            <div className="text-xs uppercase tracking-wide text-neutral-500">Calendar view</div>
+            <h2 className="font-serif text-xl font-medium text-[#2f2b27]">Bills for {monthInputValue}</h2>
+            <div className="text-xs uppercase tracking-wide text-[#776f66]">Calendar view</div>
           </div>
 
           <div className="mt-3 overflow-x-auto">
             <div className="min-w-[720px]">
-              <div className="grid grid-cols-7 border border-neutral-200 bg-neutral-50 text-xs font-medium uppercase tracking-wide text-neutral-600">
+              <div
+                className="grid grid-cols-7 border bg-[rgba(107,142,35,0.08)] text-xs font-medium uppercase tracking-wide text-[#6B8E23]"
+                style={{ borderColor: "rgba(107,142,35,0.55)" }}
+              >
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                  <div key={day} className="border-b border-neutral-200 px-3 py-2 text-center text-neutral-600">
+                  <div
+                    key={day}
+                    className="border-b px-3 py-2 text-center text-[#6B8E23]"
+                    style={{ borderColor: "rgba(107,142,35,0.55)" }}
+                  >
                     {day}
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-7 border-l border-t border-neutral-200">
+              <div
+                className="grid grid-cols-7 border-t border-l"
+                style={{ borderColor: "rgba(107,142,35,0.55)" }}
+              >
                 {calendarWeeks.flatMap((week, weekIndex) =>
                   week.map((day) => {
                     const dayBills = billsByDate[day.iso] ?? [];
                     return (
                       <div
                         key={`${weekIndex}-${day.iso}`}
-                        className={`min-h-[140px] border-b border-r border-neutral-200 bg-white p-3 ${
-                          day.inMonth ? "" : "bg-neutral-50 text-neutral-400"
+                        className={`min-h-[140px] border-r border-b bg-white/90 p-3 ${
+                          day.inMonth ? "" : "bg-[#f4f0e9] text-[#6B8E23]/60"
                         }`}
+                        style={{ borderColor: "rgba(107,142,35,0.55)" }}
                       >
-                        <div className="text-xs font-medium text-neutral-900">
+                        <div className="text-xs font-medium text-black">
                           <span className={day.inMonth ? "" : "text-neutral-400"}>{day.day}</span>
                         </div>
                         {dayBills.length > 0 && (
@@ -220,26 +231,24 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
                               const paidOnDate = payment ? new Date(payment.paid_on) : null;
                               const statusLabel = isPaid ? "Paid" : "Due";
                               const statusClass = isPaid
-                                ? "text-green-700 bg-green-100 px-2 py-0.5 rounded-full"
+                                ? "text-[#4CAF50] bg-[rgba(76,175,80,0.25)] px-2 py-0.5 rounded-full"
                                 : "text-red-600";
                               return (
                                 <div
                                   key={bill.id}
-                                  className="rounded-lg border border-neutral-200 bg-white p-2"
+                                  className="rounded-lg border border-[rgba(107,119,94,0.2)] bg-[#f7f3ec] p-2"
                                 >
                                   <div className="flex items-start justify-between gap-2">
                                     <div>
-                                      <div className="text-sm font-medium text-neutral-900">{bill.name}</div>
-                                      <div className="text-[12px] text-neutral-600">
-                                        ${Number(bill.amount).toFixed(2)}
-                                      </div>
+                                      <div className="text-sm font-medium text-[#2f2b27]">{bill.name}</div>
+                                      <div className="text-[12px] text-[#4d463f]">${Number(bill.amount).toFixed(2)}</div>
                                     </div>
                                     <div className={`text-[11px] uppercase tracking-wide ${statusClass}`}>
                                       {statusLabel}
                                     </div>
                                   </div>
                                   {isPaid && paidOnDate ? (
-                                    <div className="mt-1 text-[11px] text-neutral-500">
+                                    <div className="mt-1 text-[11px] text-[#6B775E]">
                                       Paid on {formatDateInput(paidOnDate)}
                                     </div>
                                   ) : (
@@ -249,7 +258,7 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
                                       <input type="hidden" name="paid_on" value={day.iso} />
                                       <button
                                         type="submit"
-                                        className="text-xs font-medium text-neutral-700 underline underline-offset-4 transition hover:text-neutral-900"
+                                        className="text-xs font-medium text-[#6B775E]/70 underline underline-offset-4 transition hover:text-[#6B775E]"
                                       >
                                         Mark paid
                                       </button>

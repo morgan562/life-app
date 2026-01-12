@@ -9,7 +9,6 @@ import {
   addCategoryInitialState,
   addTransactionInitialState,
 } from "./budgetState";
-import { formatISOToDateInput, normalizeDateToMiddayUTC } from "@/lib/dates";
 
 type BudgetCategory = {
   id: string;
@@ -71,11 +70,7 @@ export function AddTransactionForm({ categories }: { categories: BudgetCategory[
     }
   }, [categories]);
 
-  const today = new Date();
-  const todayDateString = `${today.getFullYear().toString().padStart(4, "0")}-${(today.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-  const defaultDate = formatISOToDateInput(normalizeDateToMiddayUTC(todayDateString));
+  const defaultDate = new Date().toISOString().slice(0, 10);
   const hasCategories = categories.length > 0;
 
   return (
