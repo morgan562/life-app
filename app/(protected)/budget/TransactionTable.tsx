@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { ArchiveTransactionButton } from "./ArchiveTransactionButton";
 import { updateBudgetTransaction } from "./actions";
 import { updateTransactionInitialState } from "./budgetState";
-import { formatISOToDateInput } from "@/lib/dates";
+import { isoToYMD } from "@/lib/budget/date";
 
 type BudgetCategory = {
   id: string;
@@ -73,7 +73,7 @@ export function TransactionTable({ transactions, categories, categoryById }: Pro
         category_id: txn.category_id ?? "",
         type: txn.type,
         amount: String(txn.amount),
-        occurred_at: formatISOToDateInput(txn.occurred_at),
+        occurred_at: isoToYMD(txn.occurred_at),
         description: txn.description ?? "",
       };
     });
@@ -104,7 +104,7 @@ export function TransactionTable({ transactions, categories, categoryById }: Pro
             category_id: txn.category_id ?? "",
             type: txn.type,
             amount: String(txn.amount),
-            occurred_at: formatISOToDateInput(txn.occurred_at),
+            occurred_at: isoToYMD(txn.occurred_at),
             description: txn.description ?? "",
           },
         }));
@@ -157,7 +157,7 @@ export function TransactionTable({ transactions, categories, categoryById }: Pro
               category_id: txn.category_id ?? "",
               type: txn.type,
               amount: String(txn.amount),
-              occurred_at: formatISOToDateInput(txn.occurred_at),
+              occurred_at: isoToYMD(txn.occurred_at),
               description: txn.description ?? "",
             };
 
@@ -241,7 +241,7 @@ export function TransactionTable({ transactions, categories, categoryById }: Pro
 
             return (
               <tr key={txn.id} className="border-t border-neutral-200">
-                <td className="py-2 pr-4 align-top">{formatISOToDateInput(txn.occurred_at)}</td>
+                <td className="py-2 pr-4 align-top">{isoToYMD(txn.occurred_at)}</td>
                 <td className="py-2 pr-4 align-top">{renderCategory(txn)}</td>
                 <td className="py-2 pr-4 align-top">{txn.description ?? "(no description)"}</td>
                 <td className="py-2 pr-4 align-top capitalize">{txn.type}</td>
