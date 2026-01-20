@@ -53,32 +53,14 @@ export async function addWishlistItem(_prev: AddWishlistState, formData: FormDat
     return { error: "Title is required.", success: false, item: null };
   }
 
-  const { data: orderRows, error: orderError } = await supabase
-    .from("wishlist_items")
-    .select("sort_order")
-    .eq("owner_id", userId)
-    .order("sort_order", { ascending: false })
-    .limit(1);
+  const { data, error: rpcError } = await supabase.rpc("add_wishlist_item", {
+    p_title: title,
+    p_url: url ?? null,
+  });
 
-  if (orderError) {
-    return { error: "Could not determine item order.", success: false, item: null };
-  }
-
-  const nextOrder = orderRows && orderRows.length > 0 ? (orderRows[0].sort_order ?? 0) + 1 : 1;
-
-  const { data, error: insertError } = await supabase
-    .from("wishlist_items")
-    .insert({
-      owner_id: userId,
-      title,
-      url,
-      sort_order: nextOrder,
-    })
-    .select("id, title, url, sort_order")
-    .single();
-
-  if (insertError || !data) {
-    return { error: "Failed to add item.", success: false, item: null };
+  if (rpcError || !data) {
+    console.error("add_wishlist_item RPC error:", rpcError?.message);
+    return { error: rpcError?.message || "Failed to add item.", success: false, item: null };
   }
 
   revalidatePath("/wishlist");

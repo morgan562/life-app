@@ -124,15 +124,15 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
   const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
-    if (addState.success && addState.item) {
-      setItems((prev) => {
-        const alreadyExists = prev.some((it) => it.id === addState.item?.id);
-        if (alreadyExists) return prev;
-        return [...prev, addState.item].sort((a, b) => a.sort_order - b.sort_order);
-      });
-      formRef.current?.reset();
-    }
-  }, [addState]);
+    if (!addState.success || !addState.item) return;
+    const newItem = addState.item;
+    setItems((prev) => {
+      const alreadyExists = prev.some((it) => it.id === newItem.id);
+      if (alreadyExists) return prev;
+      return [...prev, newItem].sort((a, b) => a.sort_order - b.sort_order);
+    });
+    formRef.current?.reset();
+  }, [addState.item, addState.success]);
 
   useEffect(() => {
     setMounted(true);
