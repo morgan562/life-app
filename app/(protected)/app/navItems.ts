@@ -18,6 +18,11 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/budget/calendar",
   },
   {
+    label: "Wishlist",
+    icon: "⭐",
+    href: "/wishlist",
+  },
+  {
     label: "Coming soon",
     icon: "🌿",
     disabled: true,
