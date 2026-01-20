@@ -5,6 +5,7 @@ import { AddTransactionForm } from "./AddTransactionForm";
 import { TransactionTable } from "./TransactionTable";
 import { BudgetFilters } from "./BudgetFilters";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 type SessionUser = {
   id: string;
@@ -249,6 +250,12 @@ export default async function BudgetPage({
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">Budget</h1>
           <p className="mt-2 text-sm text-neutral-600">Track income and expenses for your workspace.</p>
         </div>
+        <Link
+          href="/app"
+          className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+        >
+          Menu
+        </Link>
       </div>
 
       <BudgetFilters

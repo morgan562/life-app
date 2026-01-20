@@ -10,6 +10,7 @@ import {
 } from "@/lib/budget/bills";
 import { buildCalendarGrid, clampDueDayToMonth, getMonthStart } from "@/lib/budget/calendar";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -99,27 +100,35 @@ export default async function BudgetCalendarPage({ searchParams }: { searchParam
               Create bills for your workspace and track payments for the selected month.
             </p>
           </div>
-          <form
-            method="get"
-            className="flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-800"
-          >
-            <label className="text-xs uppercase tracking-wide text-neutral-500" htmlFor="month">
-              Month
-            </label>
-            <input
-              type="month"
-              id="month"
-              name="month"
-              defaultValue={monthInputValue}
-              className="border-b border-neutral-200 bg-transparent px-2 pb-1 text-sm text-neutral-900 outline-none focus:border-neutral-400"
-            />
-            <button
-              type="submit"
-              className="rounded-full border border-neutral-200 bg-transparent px-3 py-1 text-xs font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+            <Link
+              href="/app"
+              className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
             >
-              Go
-            </button>
-          </form>
+              Menu
+            </Link>
+            <form
+              method="get"
+              className="flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-800"
+            >
+              <label className="text-xs uppercase tracking-wide text-neutral-500" htmlFor="month">
+                Month
+              </label>
+              <input
+                type="month"
+                id="month"
+                name="month"
+                defaultValue={monthInputValue}
+                className="border-b border-neutral-200 bg-transparent px-2 pb-1 text-sm text-neutral-900 outline-none focus:border-neutral-400"
+              />
+              <button
+                type="submit"
+                className="rounded-full border border-neutral-200 bg-transparent px-3 py-1 text-xs font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+              >
+                Go
+              </button>
+            </form>
+          </div>
         </div>
 
         {errorMessage && (
