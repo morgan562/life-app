@@ -1,5 +1,7 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import BottomNav from "./BottomNav";
+import QuoteCard from "./QuoteCard";
 import SignOutButton from "./SignOutButton";
 
 type Profile = {
@@ -82,33 +84,26 @@ export default async function ProtectedAppPage() {
   }
 
   return (
-    <main className="p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">App</h1>
-          <p className="mt-2 text-neutral-600">Protected app home.</p>
-        </div>
-        <SignOutButton />
+    <main className="relative min-h-screen bg-[#F6F3EE] text-neutral-900">
+      <div className="absolute right-6 top-6">
+        <SignOutButton className="rounded-xl bg-white/70 p-1 shadow-sm backdrop-blur" />
       </div>
 
-      <div className="mt-6 grid gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:grid-cols-2">
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Display name</div>
-          <div className="text-sm font-medium text-neutral-900">{profile.display_name ?? "(not set)"}</div>
+      <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 pb-32 pt-24">
+        <div className="mb-10 text-center">
+          <div className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Menu</div>
+          <h1 className="mt-3 text-3xl font-semibold">
+            Welcome back, {profile.display_name ?? "friend"}
+          </h1>
+          <p className="mt-2 text-sm text-neutral-600">
+            Choose where to go next or pause for a moment of inspiration.
+          </p>
         </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Email</div>
-          <div className="text-sm font-medium text-neutral-900">{user.email ?? "(unknown)"}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Workspace ID</div>
-          <div className="text-sm font-medium text-neutral-900">{membership.workspace_id}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Role</div>
-          <div className="text-sm font-medium text-neutral-900">{membership.role ?? "(unknown)"}</div>
-        </div>
+
+        <QuoteCard />
       </div>
+
+      <BottomNav />
     </main>
   );
 }
