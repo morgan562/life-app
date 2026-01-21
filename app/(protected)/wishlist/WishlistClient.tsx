@@ -59,11 +59,7 @@ function SortableRow({ item, isOwner, onDelete, pending }: SortableRowProps) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex items-start justify-between gap-4 rounded-2xl border border-black/10 bg-white/80 p-4 shadow-sm"
-    >
+    <div ref={setNodeRef} style={style} className="glass-row flex items-start justify-between gap-4 p-4">
       <div className="flex flex-1 items-start gap-3">
         {isOwner ? (
           <button
@@ -99,7 +95,7 @@ function SortableRow({ item, isOwner, onDelete, pending }: SortableRowProps) {
           type="button"
           onClick={() => onDelete(item.id)}
           disabled={pending}
-          className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-60"
+          className="glass-button text-xs disabled:cursor-not-allowed disabled:opacity-60"
         >
           Delete
         </button>
@@ -193,7 +189,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
     setIsReordering(false);
   };
 
-  let listContent: React.ReactNode = <p className="text-sm text-neutral-600">No items yet.</p>;
+  let listContent: React.ReactNode = <p className="glass-muted">No items yet.</p>;
 
   if (items.length > 0 && !isOwner) {
     listContent = (
@@ -201,7 +197,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex items-start justify-between gap-4 rounded-2xl border border-black/10 bg-white/80 p-4 shadow-sm"
+            className="glass-row flex items-start justify-between gap-4 p-4"
           >
             <div className="flex flex-1 items-start gap-3">
               <div className="mt-1 h-5 w-5" />
@@ -234,7 +230,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
           {items.map((item) => (
             <div
               key={item.id}
-              className="flex items-start justify-between gap-4 rounded-2xl border border-black/10 bg-white/80 p-4 shadow-sm"
+              className="glass-row flex items-start justify-between gap-4 p-4"
             >
               <div className="flex flex-1 items-start gap-3">
                 <div className="mt-1 h-5 w-5" />
@@ -258,7 +254,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
                 type="button"
                 onClick={() => handleDelete(item.id)}
                 disabled={pendingDeleteTransition && deletePendingId === item.id}
-                className="rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-60"
+                className="glass-button text-xs disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Delete
               </button>
@@ -290,9 +286,9 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
   return (
     <div className="space-y-6">
       {isOwner ? (
-        <div className="rounded-3xl border border-black/10 bg-white/70 p-6 shadow-sm">
+        <div className="glass-surface-strong p-6 space-y-4">
           <h2 className="text-xl font-semibold text-neutral-900">Add item</h2>
-          <form ref={formRef} action={formAction} className="mt-4 grid gap-4 sm:grid-cols-3 sm:items-center">
+          <form ref={formRef} action={formAction} className="grid gap-4 sm:grid-cols-3 sm:items-center">
             <div className="sm:col-span-1">
               <label className="text-xs uppercase tracking-[0.18em] text-neutral-500" htmlFor="title">
                 Title
@@ -301,7 +297,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
                 id="title"
                 name="title"
                 required
-                className="mt-2 w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400"
+                className="glass-input mt-2"
                 placeholder="New espresso machine"
               />
             </div>
@@ -313,14 +309,14 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
                 id="url"
                 name="url"
                 type="url"
-                className="mt-2 w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400"
+                className="glass-input mt-2"
                 placeholder="https://example.com"
               />
             </div>
             <div className="sm:col-span-1 flex items-end">
               <button
                 type="submit"
-                className="inline-flex w-full items-center justify-center rounded-xl border border-black/10 bg-neutral-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:translate-y-[-1px] hover:shadow"
+                className="glass-button-primary inline-flex w-full items-center justify-center"
               >
                 Add item
               </button>
@@ -330,7 +326,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
         </div>
       ) : null}
 
-      <div className="rounded-3xl border border-black/10 bg-white/70 p-6 shadow-sm">
+      <div className="glass-surface p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-neutral-900">Wishlist</h2>
           {isOwner ? (

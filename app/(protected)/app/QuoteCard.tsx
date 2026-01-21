@@ -88,7 +88,7 @@ export default function QuoteCard() {
   }, [todayKey]);
 
   return (
-    <div className="w-full max-w-2xl rounded-3xl border border-black/10 bg-white/70 p-8 shadow-sm">
+    <div className="glass-surface w-full max-w-2xl p-8">
       <p className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">
         Quote of the day
       </p>

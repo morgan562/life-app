@@ -24,3 +24,54 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+
+@layer base {
+  .app-bg {
+    @apply text-neutral-900;
+    background-color: #f6f3ee;
+    background-image:
+      radial-gradient(140% 140% at 12% 12%, rgba(255, 255, 255, 0.30), transparent),
+      radial-gradient(120% 120% at 88% 8%, rgba(245, 237, 225, 0.22), transparent),
+      radial-gradient(120% 120% at 12% 90%, rgba(232, 225, 214, 0.18), transparent);
+    background-repeat: no-repeat;
+  }
+
+  .glass-surface {
+    @apply relative overflow-hidden rounded-3xl border border-white/30 bg-white/20 backdrop-blur-2xl ring-1 ring-white/25 shadow-[0_18px_60px_rgba(0,0,0,0.16)];
+    @apply before:absolute before:inset-0 before:rounded-[inherit] before:bg-gradient-to-b before:from-white/35 before:via-white/10 before:to-transparent before:pointer-events-none;
+    @apply after:absolute after:inset-0 after:rounded-[inherit] after:ring-1 after:ring-white/10 after:pointer-events-none;
+  }
+
+  .glass-surface-strong {
+    @apply relative overflow-hidden rounded-3xl border border-white/30 bg-white/30 backdrop-blur-2xl ring-1 ring-white/25 shadow-[0_18px_60px_rgba(0,0,0,0.16)];
+    @apply before:absolute before:inset-0 before:rounded-[inherit] before:bg-gradient-to-b before:from-white/35 before:via-white/10 before:to-transparent before:pointer-events-none;
+    @apply after:absolute after:inset-0 after:rounded-[inherit] after:ring-1 after:ring-white/10 after:pointer-events-none;
+  }
+
+  .glass-row {
+    @apply relative overflow-hidden rounded-2xl border border-white/30 bg-white/22 backdrop-blur-2xl ring-1 ring-white/25 shadow-[0_14px_40px_rgba(0,0,0,0.14)];
+    @apply before:absolute before:inset-0 before:rounded-[inherit] before:bg-gradient-to-b before:from-white/35 before:via-white/8 before:to-transparent before:pointer-events-none;
+    @apply after:absolute after:inset-0 after:rounded-[inherit] after:ring-1 after:ring-white/10 after:pointer-events-none;
+  }
+
+  .glass-button {
+    @apply inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/16 px-4 py-2 text-sm font-semibold text-neutral-900 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl ring-1 ring-white/20 transition hover:-translate-y-[1px] hover:bg-white/24 active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-300;
+  }
+
+  .glass-button-primary {
+    @apply inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/22 px-4 py-2 text-sm font-semibold text-neutral-900 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl ring-1 ring-white/20 transition hover:-translate-y-[1px] hover:bg-white/30 active:translate-y-0 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-300;
+  }
+
+  .glass-button-danger {
+    @apply inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/20 px-3 py-2 text-sm font-semibold text-neutral-800 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl ring-1 ring-white/20 transition hover:bg-red-50/80 hover:text-red-700 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-200;
+  }
+
+  .glass-input {
+    @apply w-full rounded-2xl border border-white/35 bg-white/35 px-3 py-2 text-sm text-neutral-900 shadow-sm shadow-black/5 backdrop-blur-2xl ring-1 ring-white/20 outline-none transition focus-visible:ring-2 focus-visible:ring-black/15;
+  }
+
+  .glass-muted {
+    @apply text-sm text-neutral-600;
+  }
+
+}
