@@ -138,7 +138,7 @@ export function TransactionTable({ transactions, categories, categoryById }: Pro
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full text-sm">
+      <table className="min-w-full text-sm glass-surface">
         <thead className="text-left text-black">
           <tr>
             <th className="py-2 pr-4">Date</th>

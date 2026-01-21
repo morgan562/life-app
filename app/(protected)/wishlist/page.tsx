@@ -36,8 +36,8 @@ export default async function WishlistPage() {
   const safeItems: WishlistItem[] = items ?? [];
 
   return (
-    <main className="min-h-screen bg-[#F6F3EE] px-6 py-10 text-neutral-900">
-      <div className="mx-auto flex max-w-4xl flex-col gap-8">
+    <main className="min-h-screen app-bg px-4 py-10 md:px-6">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Wishlist</p>
@@ -49,7 +49,7 @@ export default async function WishlistPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/app"
-              className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
+              className="glass-button"
             >
               Menu
             </Link>

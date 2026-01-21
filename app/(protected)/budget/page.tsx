@@ -244,78 +244,77 @@ export default async function BudgetPage({
     filters.typeFilter !== "all" || !!filters.categoryFilter || filters.selectedMonthParam !== currentMonthParam;
 
   return (
-    <main className="min-h-screen bg-white p-6 text-neutral-900">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">Budget</h1>
-          <p className="mt-2 text-sm text-neutral-600">Track income and expenses for your workspace.</p>
-        </div>
-        <Link
-          href="/app"
-          className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-800 transition hover:border-neutral-400 hover:text-neutral-900"
-        >
-          Menu
-        </Link>
-      </div>
-
-      <BudgetFilters
-        selectedMonthParam={filters.selectedMonthParam}
-        typeFilter={filters.typeFilter}
-        categoryFilter={filters.categoryFilter}
-        categories={categories ?? []}
-      />
-
-      {hasError && (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-black">
-          Error loading budget data: {errorMessage}
-        </div>
-      )}
-
-      <section className="mt-6 grid gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:grid-cols-3">
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Income (MTD)</div>
-          <div className="text-lg font-semibold text-neutral-900">${totals.income.toFixed(2)}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Expense (MTD)</div>
-          <div className="text-lg font-semibold text-neutral-900">${totals.expense.toFixed(2)}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-neutral-500">Net (MTD)</div>
-          <div className="text-lg font-semibold text-neutral-900">${totals.net.toFixed(2)}</div>
-        </div>
-      </section>
-
-      <section className="mt-6">
-        <AddTransactionForm categories={categories ?? []} />
-      </section>
-
-      <section className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-900">Recent Transactions</h2>
-          <div className="text-xs text-neutral-600">
-            Showing latest 20{hasFiltersActive ? " (filtered)" : ""}
+    <main className="min-h-screen app-bg px-4 py-8 text-neutral-900 md:px-6">
+      <div className="mx-auto flex max-w-5xl flex-col gap-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">Budget</h1>
+            <p className="mt-2 text-sm text-neutral-600">Track income and expenses for your workspace.</p>
           </div>
+          <Link href="/app" className="glass-button">
+            Menu
+          </Link>
         </div>
-        {transactions && transactions.length > 0 ? (
-          <TransactionTable
-            transactions={transactions as BudgetTransaction[]}
-            categories={categories ?? []}
-            categoryById={categoryById}
-          />
-        ) : (
-          <p className="text-sm text-neutral-600">No transactions yet.</p>
-        )}
-      </section>
 
-      <section className="mt-6 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-neutral-900">Categories</h2>
-        {categories && categories.length > 0 ? (
-          <CategoryList categories={categories} />
-        ) : (
-          <p className="mt-2 text-sm text-neutral-600">No categories yet.</p>
+        <BudgetFilters
+          selectedMonthParam={filters.selectedMonthParam}
+          typeFilter={filters.typeFilter}
+          categoryFilter={filters.categoryFilter}
+          categories={categories ?? []}
+        />
+
+        {hasError && (
+          <div className="glass-surface-strong border-red-200/60 bg-red-50/60 p-3 text-sm text-black">
+            Error loading budget data: {errorMessage}
+          </div>
         )}
-      </section>
+
+        <section className="glass-surface p-4 grid gap-4 sm:grid-cols-3">
+          <div>
+            <div className="text-xs uppercase tracking-wide text-neutral-500">Income (MTD)</div>
+            <div className="text-lg font-semibold text-neutral-900">${totals.income.toFixed(2)}</div>
+          </div>
+          <div>
+            <div className="text-xs uppercase tracking-wide text-neutral-500">Expense (MTD)</div>
+            <div className="text-lg font-semibold text-neutral-900">${totals.expense.toFixed(2)}</div>
+          </div>
+          <div>
+            <div className="text-xs uppercase tracking-wide text-neutral-500">Net (MTD)</div>
+            <div className="text-lg font-semibold text-neutral-900">${totals.net.toFixed(2)}</div>
+          </div>
+        </section>
+
+        <section>
+          <AddTransactionForm categories={categories ?? []} />
+        </section>
+
+        <section className="glass-surface p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-neutral-900">Recent Transactions</h2>
+            <div className="text-xs text-neutral-600">
+              Showing latest 20{hasFiltersActive ? " (filtered)" : ""}
+            </div>
+          </div>
+          {transactions && transactions.length > 0 ? (
+            <TransactionTable
+              transactions={transactions as BudgetTransaction[]}
+              categories={categories ?? []}
+              categoryById={categoryById}
+            />
+          ) : (
+            <p className="glass-muted">No transactions yet.</p>
+          )}
+        </section>
+
+        <section className="glass-surface p-4">
+          <h2 className="text-lg font-semibold text-neutral-900">Categories</h2>
+          {categories && categories.length > 0 ? (
+            <CategoryList categories={categories} />
+          ) : (
+            <p className="mt-2 glass-muted">No categories yet.</p>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

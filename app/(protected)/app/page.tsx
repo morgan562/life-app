@@ -84,13 +84,13 @@ export default async function ProtectedAppPage() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[#F6F3EE] text-neutral-900">
+    <main className="relative min-h-screen app-bg">
       <div className="absolute right-6 top-6">
-        <SignOutButton className="rounded-xl bg-white/70 p-1 shadow-sm backdrop-blur" />
+        <SignOutButton className="glass-button" />
       </div>
 
       <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 pb-32 pt-24">
-        <div className="mb-10 text-center">
+        <div className="mb-10 text-center glass-surface px-6 py-5">
           <div className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Menu</div>
           <h1 className="mt-3 text-3xl font-semibold">
             Welcome back, {profile.display_name ?? "friend"}
