@@ -6,8 +6,9 @@ import type { WishlistItem } from "../actions";
 type Profile = {
   user_id: string;
   display_name: string | null;
-  full_name: string | null;
-  name: string | null;
+  full_name?: string | null;
+  name?: string | null;
+  created_at?: string;
 };
 
 function deriveName(profile: Profile | null, email: string | null): string {
@@ -35,8 +36,8 @@ export default async function WishlistUserPage({ params }: { params: { userId: s
 
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("user_id, display_name, full_name, name")
-    .order("display_name", { ascending: true });
+    .select("user_id, display_name, created_at")
+    .order("created_at", { ascending: true });
 
   const safeProfiles: Profile[] = profiles ?? [];
 
@@ -79,6 +80,7 @@ export default async function WishlistUserPage({ params }: { params: { userId: s
           currentName={currentName}
           partnerName={partnerUserId ? partnerName : null}
           initialViewingUserId={initialViewingUserId}
+          profiles={safeProfiles}
         />
       </div>
     </main>
