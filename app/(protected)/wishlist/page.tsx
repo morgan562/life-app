@@ -1,14 +1,24 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { WishlistClient } from "./WishlistClient";
-import { UserSwitcher } from "./UserSwitcher";
 import type { WishlistItem } from "./actions";
 
 type Profile = {
-  id: string;
+  user_id: string;
   display_name: string | null;
+  created_at?: string;
 };
+
+function deriveName(profile: Profile | null, email: string | null): string {
+  const profileName = profile?.display_name;
+  if (profileName?.trim()) return profileName.trim();
+
+  const normalizedEmail = email?.toLowerCase() ?? "";
+  if (normalizedEmail.includes("tyler")) return "Tyler";
+  if (normalizedEmail.includes("tessa")) return "Tessa";
+
+  return "Tyler"; // safe default
+}
 
 export default async function WishlistPage() {
   const supabase = await getSupabaseServerClient();
@@ -23,41 +33,52 @@ export default async function WishlistPage() {
 
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, display_name")
-    .order("display_name", { ascending: true });
+    .select("user_id, display_name, created_at")
+    .order("created_at", { ascending: true });
+
+  const safeProfiles: Profile[] = profiles ?? [];
+
+  const currentProfile = safeProfiles.find((profile) => String(profile.user_id) === String(user.id)) ?? null;
+  const currentName = deriveName(currentProfile, user.email);
+
+  const partnerProfile =
+    safeProfiles.find((profile) => String(profile.user_id) !== String(user.id)) ?? null;
+  const partnerName = partnerProfile
+    ? deriveName(partnerProfile, null)
+    : currentName === "Tyler"
+      ? "Tessa"
+      : "Tyler";
+  const partnerUserId = partnerProfile?.user_id ?? null;
+
+  const idsToFetch = Array.from(new Set([user.id, partnerUserId].filter(Boolean))) as string[];
 
   const { data: items } = await supabase
     .from("wishlist_items")
-    .select("id, title, url, sort_order")
-    .eq("owner_id", user.id)
+    .select("id, title, url, sort_order, owner_id")
+    .in("owner_id", idsToFetch)
     .order("sort_order", { ascending: true });
 
-  const safeProfiles: Profile[] = profiles ?? [];
-  const safeItems: WishlistItem[] = items ?? [];
+  const safeItems: (WishlistItem & { owner_id: string })[] = (items ?? []) as (WishlistItem & {
+    owner_id: string;
+  })[];
+
+  const itemsByUser = idsToFetch.reduce<Record<string, (WishlistItem & { owner_id: string })[]>>((acc, id) => {
+    acc[id] = safeItems.filter((item) => item.owner_id === id);
+    return acc;
+  }, {});
 
   return (
     <main className="min-h-screen app-bg px-4 py-10 md:px-6">
       <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Wishlist</p>
-            <h1 className="mt-2 text-3xl font-semibold">Your wishlist</h1>
-            <p className="mt-2 text-sm text-neutral-600">
-              Drag to set priority, add links, and keep track of what matters most.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/app"
-              className="glass-button"
-            >
-              Menu
-            </Link>
-            <UserSwitcher profiles={safeProfiles} currentUserId={user.id} viewingUserId={user.id} />
-          </div>
-        </div>
-
-        <WishlistClient items={safeItems} isOwner />
+        <WishlistClient
+          itemsByUser={itemsByUser}
+          currentUserId={user.id}
+          partnerUserId={partnerUserId}
+          currentName={currentName}
+          partnerName={partnerUserId ? partnerName : null}
+          initialViewingUserId={user.id}
+          profiles={safeProfiles}
+        />
       </div>
     </main>
   );
