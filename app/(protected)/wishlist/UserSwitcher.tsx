@@ -3,46 +3,58 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-type ProfileOption = {
+type NamedUser = {
   id: string;
-  display_name: string | null;
+  name: string;
 };
 
 type UserSwitcherProps = {
-  profiles: ProfileOption[];
-  currentUserId: string;
-  viewingUserId: string;
+  currentUser: NamedUser;
+  viewing: NamedUser;
+  partner: NamedUser | null;
 };
 
-export function UserSwitcher({ profiles, currentUserId, viewingUserId }: UserSwitcherProps) {
+export function UserSwitcher({ currentUser, viewing, partner }: UserSwitcherProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
+  const handleSwitch = (targetId: string) => {
+    startTransition(() => {
+      if (targetId === currentUser.id) {
+        router.push("/wishlist");
+        return;
+      }
+      router.push(`/wishlist/${targetId}`);
+    });
+  };
+
+  const partnerTargetId = viewing.id === partner?.id ? currentUser.id : partner?.id;
+  const partnerLabel =
+    pending || !partner
+      ? pending
+        ? "Switching…"
+        : "Partner"
+      : viewing.id === partner.id
+        ? currentUser.name
+        : partner.name;
+
   return (
-    <div className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-sm text-neutral-800 shadow-sm">
-      <span className="text-[11px] uppercase tracking-[0.16em] text-neutral-500">Viewing</span>
-      <select
-        className="min-w-[180px] rounded-full border border-black/10 bg-white/70 px-3 py-1 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400 disabled:opacity-60"
-        value={viewingUserId}
-        disabled={pending}
-        onChange={(event) => {
-          const targetId = event.target.value;
-          startTransition(() => {
-            if (targetId === currentUserId) {
-              router.push("/wishlist");
-              return;
-            }
-            router.push(`/wishlist/${targetId}`);
-          });
-        }}
-      >
-        {profiles.map((profile) => (
-          <option key={profile.id} value={profile.id}>
-            {profile.display_name || "Unnamed user"}
-            {profile.id === currentUserId ? " (you)" : ""}
-          </option>
-        ))}
-      </select>
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      <div className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-3 py-1 text-xs text-neutral-800 backdrop-blur-md shadow-sm">
+        <span className="text-[10px] uppercase tracking-[0.16em] text-neutral-500">Viewing:</span>
+        <span className="font-semibold text-neutral-900">{viewing.name}</span>
+      </div>
+
+      {partner ? (
+        <button
+          type="button"
+          className="glass-button px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          onClick={() => partnerTargetId && handleSwitch(partnerTargetId)}
+          disabled={pending || !partnerTargetId}
+        >
+          {partnerLabel}
+        </button>
+      ) : null}
     </div>
   );
 }

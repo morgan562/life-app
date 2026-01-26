@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import {
   DndContext,
@@ -27,9 +28,16 @@ import {
   type WishlistItem,
 } from "./actions";
 
+type WishlistItemWithOwner = WishlistItem & { owner_id: string };
+
 type WishlistClientProps = {
-  items: WishlistItem[];
-  isOwner: boolean;
+  itemsByUser: Record<string, WishlistItemWithOwner[]>;
+  currentUserId: string;
+  partnerUserId: string | null;
+  currentName: string;
+  partnerName: string | null;
+  initialViewingUserId: string;
+  profiles: { user_id: string; display_name: string | null }[];
 };
 
 type SortableRowProps = {
@@ -104,8 +112,17 @@ function SortableRow({ item, isOwner, onDelete, pending }: SortableRowProps) {
   );
 }
 
-export function WishlistClient({ items: initialItems, isOwner }: WishlistClientProps) {
-  const [items, setItems] = useState<WishlistItem[]>(initialItems);
+export function WishlistClient({
+  itemsByUser,
+  currentUserId,
+  partnerUserId,
+  currentName,
+  partnerName,
+  initialViewingUserId,
+  profiles,
+}: WishlistClientProps) {
+  const [itemsByUserState, setItemsByUserState] = useState<Record<string, WishlistItemWithOwner[]>>(itemsByUser);
+  const [viewingUserId, setViewingUserId] = useState<string>(initialViewingUserId);
   const [reorderError, setReorderError] = useState<string | null>(null);
   const [deletePendingId, setDeletePendingId] = useState<string | null>(null);
   const [isReordering, setIsReordering] = useState(false);
@@ -117,18 +134,34 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
   });
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [pendingDeleteTransition, startDeleteTransition] = useTransition();
+  const [switchPending, startSwitchTransition] = useTransition();
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  const items = itemsByUserState[viewingUserId] ?? [];
+  const isOwner = String(viewingUserId) === String(currentUserId);
+
+  const currentProfile = profiles.find((p) => String(p.user_id) === String(currentUserId)) ?? null;
+  const partnerProfile = profiles.find((p) => String(p.user_id) !== String(currentUserId)) ?? null;
+
+  const resolvedCurrentName = currentProfile?.display_name?.trim() || currentName;
+  const resolvedPartnerName =
+    partnerProfile?.display_name?.trim() || partnerName || (resolvedCurrentName === "Tyler" ? "Tessa" : "Tyler");
+
+  const viewingName = String(viewingUserId) === String(partnerUserId) ? resolvedPartnerName : resolvedCurrentName;
+  const partnerLabel = String(viewingUserId) === String(partnerUserId) ? resolvedCurrentName : resolvedPartnerName;
 
   useEffect(() => {
     if (!addState.success || !addState.item) return;
-    const newItem = addState.item;
-    setItems((prev) => {
-      const alreadyExists = prev.some((it) => it.id === newItem.id);
+    const newItem: WishlistItemWithOwner = { ...addState.item, owner_id: currentUserId };
+    setItemsByUserState((prev) => {
+      const currentList = prev[currentUserId] ?? [];
+      const alreadyExists = currentList.some((it) => it.id === newItem.id);
       if (alreadyExists) return prev;
-      return [...prev, newItem].sort((a, b) => a.sort_order - b.sort_order);
+      const next = [...currentList, newItem].sort((a, b) => a.sort_order - b.sort_order);
+      return { ...prev, [currentUserId]: next };
     });
     formRef.current?.reset();
-  }, [addState.item, addState.success]);
+  }, [addState.item, addState.success, currentUserId]);
 
   useEffect(() => {
     setMounted(true);
@@ -143,6 +176,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
   );
 
   const handleDelete = (id: string) => {
+    if (!isOwner) return;
     setDeleteError(null);
     setDeletePendingId(id);
     startDeleteTransition(async () => {
@@ -152,7 +186,10 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
         setDeletePendingId(null);
         return;
       }
-      setItems((prev) => prev.filter((item) => item.id !== id));
+      setItemsByUserState((prev) => {
+        const nextList = (prev[currentUserId] ?? []).filter((item) => item.id !== id);
+        return { ...prev, [currentUserId]: nextList };
+      });
       setDeletePendingId(null);
     });
   };
@@ -162,24 +199,25 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = items.findIndex((item) => item.id === active.id);
-    const newIndex = items.findIndex((item) => item.id === over.id);
+    const list = itemsByUserState[currentUserId] ?? [];
+    const oldIndex = list.findIndex((item) => item.id === active.id);
+    const newIndex = list.findIndex((item) => item.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
 
-    const previousItems = items;
-    const nextItems = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+    const previousItems = list;
+    const nextItems = arrayMove(list, oldIndex, newIndex).map((item, index) => ({
       ...item,
       sort_order: index + 1,
     }));
 
-    setItems(nextItems);
+    setItemsByUserState((prev) => ({ ...prev, [currentUserId]: nextItems }));
     setReorderError(null);
     setIsReordering(true);
 
     const result = await reorderWishlistItems(nextItems.map((item) => item.id));
 
     if (!result.success) {
-      setItems(previousItems);
+      setItemsByUserState((prev) => ({ ...prev, [currentUserId]: previousItems }));
       setReorderError(result.error ?? "Reorder failed. Please try again.");
       if (result.error) {
         console.error("Reorder failed:", result.error);
@@ -188,6 +226,26 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
 
     setIsReordering(false);
   };
+
+  const toggleViewing = () => {
+    if (!partnerUserId) return;
+    startSwitchTransition(() => {
+      setViewingUserId((prev) => (prev === partnerUserId ? currentUserId : partnerUserId));
+      setReorderError(null);
+      setDeleteError(null);
+    });
+  };
+
+  useEffect(() => {
+    console.log(
+      "profiles count",
+      profiles.length,
+      "currentUserId",
+      currentUserId,
+      "partner",
+      partnerProfile?.user_id
+    );
+  }, [profiles, currentUserId, partnerProfile?.user_id]);
 
   let listContent: React.ReactNode = <p className="glass-muted">No items yet.</p>;
 
@@ -285,6 +343,49 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Wishlist</p>
+          <h1 className="mt-2 text-3xl font-semibold">
+            {isOwner ? "Your wishlist" : `${viewingName}'s wishlist`}
+          </h1>
+          <p className="mt-2 text-sm text-neutral-600">
+            {isOwner
+              ? "Drag to set priority, add links, and keep track of what matters most."
+              : "Viewing partner’s wishlist"}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/app"
+            className="glass-button"
+          >
+            Menu
+          </Link>
+          <button
+            type="button"
+            onClick={toggleViewing}
+            disabled={!partnerUserId}
+            className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/40 px-4 py-2 text-sm font-semibold text-neutral-900 shadow-sm backdrop-blur-md transition hover:shadow-md hover:ring-1 hover:ring-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-60"
+          >
+            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-neutral-600">Viewing:</span>
+            <span>{viewingName}</span>
+          </button>
+          {partnerUserId ? (
+            <button
+              type="button"
+              className="glass-button px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={toggleViewing}
+              disabled={switchPending}
+            >
+              {switchPending ? "Switching..." : partnerLabel}
+            </button>
+          ) : (
+            <span className="text-xs text-neutral-600">Partner profile not found yet</span>
+          )}
+        </div>
+      </div>
+
       {isOwner ? (
         <div className="glass-surface-strong p-6 space-y-4">
           <h2 className="text-xl font-semibold text-neutral-900">Add item</h2>
@@ -299,6 +400,7 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
                 required
                 className="glass-input mt-2"
                 placeholder="New espresso machine"
+                disabled={!isOwner}
               />
             </div>
             <div className="sm:col-span-1">
@@ -311,12 +413,14 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
                 type="url"
                 className="glass-input mt-2"
                 placeholder="https://example.com"
+                disabled={!isOwner}
               />
             </div>
             <div className="sm:col-span-1 flex items-end">
               <button
                 type="submit"
-                className="glass-button-primary inline-flex w-full items-center justify-center"
+                className="glass-button-primary inline-flex w-full items-center justify-center disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!isOwner}
               >
                 Add item
               </button>
@@ -324,7 +428,9 @@ export function WishlistClient({ items: initialItems, isOwner }: WishlistClientP
           </form>
           {addState.error ? <p className="mt-2 text-sm text-red-600">{addState.error}</p> : null}
         </div>
-      ) : null}
+      ) : (
+        <div className="glass-surface-strong p-6 text-sm text-neutral-700">Viewing partner’s wishlist</div>
+      )}
 
       <div className="glass-surface p-6 space-y-4">
         <div className="flex items-center justify-between">
