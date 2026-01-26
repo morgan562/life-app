@@ -39,7 +39,7 @@ export default async function WishlistPage() {
   const safeProfiles: Profile[] = profiles ?? [];
 
   const currentProfile = safeProfiles.find((profile) => String(profile.user_id) === String(user.id)) ?? null;
-  const currentName = deriveName(currentProfile, user.email);
+  const currentName = deriveName(currentProfile, user.email ?? null);
 
   const partnerProfile =
     safeProfiles.find((profile) => String(profile.user_id) !== String(user.id)) ?? null;
